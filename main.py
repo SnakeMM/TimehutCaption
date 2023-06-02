@@ -22,7 +22,7 @@ if (useBIP):
 # BLIP2
 if (useBIP2):
     processor2 = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
-    model2 = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b").to(device)
+    model2 = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b", device_map="auto").to(device)
 
 app = FastAPI()
 
