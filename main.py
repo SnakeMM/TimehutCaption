@@ -68,7 +68,7 @@ async def getCaptionBlip2(
         inputs = processor2(image, return_tensors="pt").to(device, torch.float16)
 
     out = model2.generate(**inputs)
-    caption = processor2.decode(out[0], skip_special_tokens=True);
+    caption = processor2.decode(out[0], skip_special_tokens=True).strip();
 
     return {
         "caption": caption
