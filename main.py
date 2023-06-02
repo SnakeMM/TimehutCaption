@@ -1,54 +1,74 @@
 import os
 import requests
+import torch
 from fastapi import FastAPI
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from transformers import Blip2Processor, Blip2ForConditionalGeneration
 from dotenv import load_dotenv
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
 load_dotenv()
 
-useCpu = os.getenv("PROCESSING_UNIT") == "CPU"
+useBIP = os.getenv("MODEL_BIP_ENABLED") == "True"
+useBIP2 = os.getenv("MODEL_BIP2_ENABLED") == "True"
 
 # BLIP
-processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-if useCpu:
-    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-else:
-    model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to("cuda")
+if (useBIP):
+    processor1 = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+    model1 = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to(device)
 
 # BLIP2
-processor2 = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
-if useCpu:
-    model2 = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b")
-else:
-    model2 = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b", device_map="auto")
+if (useBIP2):
+    processor2 = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
+    model2 = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b").to(device)
 
 app = FastAPI()
-
 
 @app.get("/")
 async def root():
     return {"introduction": "Get image caption from open source models"}
 
-@app.get("/caption/")
-async def getCaption(img_url: str, prompt: str = ''):
+@app.get("/caption/bip/")
+async def getCaptionBip(
+    img_url: str, 
+    prompt: str = '',
+):
     image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
 
-    
-    if prompt:
-        if useCpu:
-            inputs = processor(image, prompt, return_tensors="pt")
-        else:
-            inputs = processor(image, prompt, return_tensors="pt").to("cuda")
-    else:
-        if useCpu:
-            inputs = processor(image, return_tensors="pt")
-        else:
-            inputs = processor(image, return_tensors="pt").to("cuda")
+    if not useBIP:
+        return {"error": "model disabled"}
 
-    out = model.generate(**inputs)
-    caption = processor.decode(out[0], skip_special_tokens=True);
+    if prompt:
+        inputs = processor1(image, prompt, return_tensors="pt").to(device)
+    else:
+        inputs = processor1(image, return_tensors="pt").to(device)
+
+    out = model1.generate(**inputs)
+    caption = processor1.decode(out[0], skip_special_tokens=True);
+
+    return {
+        "caption": caption
+    }
+
+@app.get("/caption/bip2/")
+async def getCaptionBip2(
+    img_url: str, 
+    prompt: str = '',
+):
+    image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+
+    if not useBIP2:
+        return {"error": "model disabled"}
+
+    if prompt:
+        inputs = processor2(image, prompt, return_tensors="pt").to(device)
+    else:
+        inputs = processor2(image, return_tensors="pt").to(device)
+
+    out = model2.generate(**inputs)
+    caption = processor2.decode(out[0], skip_special_tokens=True);
 
     return {
         "caption": caption
