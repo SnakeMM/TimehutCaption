@@ -30,8 +30,8 @@ app = FastAPI()
 async def root():
     return {"introduction": "Get image caption from open source models"}
 
-@app.get("/caption/bip/")
-async def getCaptionBip(
+@app.get("/caption/blip/")
+async def getCaptionBlip(
     img_url: str, 
     prompt: str = '',
 ):
@@ -52,8 +52,8 @@ async def getCaptionBip(
         "caption": caption
     }
 
-@app.get("/caption/bip2/")
-async def getCaptionBip2(
+@app.get("/caption/blip2/")
+async def getCaptionBlip2(
     img_url: str, 
     prompt: str = '',
 ):
