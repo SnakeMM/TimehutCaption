@@ -63,9 +63,9 @@ async def getCaptionBlip2(
         return {"error": "model disabled"}
 
     if prompt:
-        inputs = processor2(image, prompt, return_tensors="pt").to(device)
+        inputs = processor2(image, prompt, return_tensors="pt").to(device, torch.float16)
     else:
-        inputs = processor2(image, return_tensors="pt").to(device)
+        inputs = processor2(image, return_tensors="pt").to(device, torch.float16)
 
     out = model2.generate(**inputs)
     caption = processor2.decode(out[0], skip_special_tokens=True);
