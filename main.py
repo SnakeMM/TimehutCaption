@@ -3,16 +3,26 @@ import requests
 from fastapi import FastAPI
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
+from transformers import Blip2Processor, Blip2ForConditionalGeneration
 from dotenv import load_dotenv
 
 load_dotenv()
 
 useCpu = os.getenv("PROCESSING_UNIT") == "CPU"
+
+# BLIP
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 if useCpu:
     model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 else:
     model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to("cuda")
+
+# BLIP2
+processor2 = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
+if useCpu:
+    model2 = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b")
+else:
+    model2 = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b", device_map="auto")
 
 app = FastAPI()
 
