@@ -6,26 +6,31 @@ from transformers import BlipProcessor, BlipForConditionalGeneration
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
 
-img_url = 'https://storage.googleapis.com/sfr-vision-language-research/BLIP/demo.jpg' 
-raw_image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
-
 app = FastAPI()
 
 
 @app.get("/")
 async def root():
-    # conditional image captioning
-    text = "a photography of"
-    inputs = processor(raw_image, text, return_tensors="pt")
+    return {"introduction": "Get image caption from open source models"}
+
+@app.get("/caption/")
+async def getCaption(img_url: str, prompt: str = '', cuda: bool = True):
+    image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+    
+    if prompt:
+        if cuda:
+            inputs = processor(image, prompt, return_tensors="pt").to("cuda")
+        else:
+            inputs = processor(image, prompt, return_tensors="pt")
+    else:
+        if cuda:
+            inputs = processor(image, return_tensors="pt").to("cuda")
+        else:
+            inputs = processor(image, return_tensors="pt")
 
     out = model.generate(**inputs)
-    print(processor.decode(out[0], skip_special_tokens=True))
-    # >>> a photography of a woman and her dog
+    caption = processor.decode(out[0], skip_special_tokens=True);
 
-    # unconditional image captioning
-    inputs = processor(raw_image, return_tensors="pt")
-
-    out = model.generate(**inputs)
-    print(processor.decode(out[0], skip_special_tokens=True))
-
-    return {"message": "Hello World"}
+    return {
+        "caption": caption
+    }
