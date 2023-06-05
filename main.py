@@ -8,6 +8,8 @@ from transformers import BlipProcessor, BlipForConditionalGeneration
 from transformers import Blip2Processor, Blip2ForConditionalGeneration
 from transformers import CLIPProcessor, CLIPModel
 
+tags = ["man","woman","dad","mom","boy","girl","baby","dog","cat","beach"]
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 load_dotenv()
@@ -90,14 +92,22 @@ async def getTagsClip(
 
     image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
 
-    tags = ["dad","mom","baby","dog","cat"]
     inputs = processor3(text=tags, images=image, return_tensors="pt", padding=True).to(device)
     outputs = model3(**inputs)
     
     logits_per_image = outputs.logits_per_image
     probs = logits_per_image.softmax(dim=1).tolist()[0]
 
+    results = []
+    for index,tag in enumerate(tags):
+        if probs[index] >= 0.01:
+            results.append({
+                "name": tag,
+                "confidence": probs[index]
+            })
+    results = sorted(results, key=lambda k: k["confidence"], reverse=True)
+
     return {
-        "tags": tags,
-        "probs": probs
+        "model": "CLIP",
+        "tags": results
     }
