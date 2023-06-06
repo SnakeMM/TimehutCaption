@@ -8,7 +8,11 @@ from transformers import BlipProcessor, BlipForConditionalGeneration
 from transformers import Blip2Processor, Blip2ForConditionalGeneration
 from transformers import CLIPProcessor, CLIPModel
 
-tags = ["man","woman","dad","mom","boy","girl","baby","dog","cat","beach"]
+# load image tags
+tags = [] 
+with open('tags' ,'r') as f:
+    for line in f:
+        tags.append(line.strip())
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
