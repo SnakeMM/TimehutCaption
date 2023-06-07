@@ -7,18 +7,21 @@ tags_where_indoor_detail = [
     "in a shopping mall",
     "in a hospital",
     "in a museum",
+    "in a library",
     "at a kids' play area"
 ]
 
 tags_where_outdoor_detail = [
     "in a park",
     "in a garden",
+    "in a sandpit",
     "in the playground",
     "on the beach",
     "in the forest"
 ]
 
 tags_what = [
+    "lying idly",
     "standing idly"
     "posing for a picture",
     "running",
@@ -26,6 +29,7 @@ tags_what = [
     "swimming",
     "sleeping",
     "playing arcade games",
+    "playing with sand",
     "playing badminton",
     "playing basketball",
     "playing football",
@@ -43,6 +47,9 @@ tags_what = [
     "playing with toys",
     "playing with balloons",
     "playing in the snow",
+    "drink water",
+    "eating food",
+    "eating fruit",
     "eating ice cream",
     "eating cotton candy",
     "feeding the fish",
