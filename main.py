@@ -90,21 +90,29 @@ async def getCaptionBlip2(
 @app.get("/tags/clip/")
 async def getTagsClip(
     img_url: str, 
+    img_tags: str = '', # split by comma
+    threshold: float = 0.01
 ):
     if not useCLIP:
         return {"error": "model disabled"}
 
     image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
 
-    inputs = processor3(text=tags, images=image, return_tensors="pt", padding=True).to(device)
+    if img_tags:
+        input_tags = img_tags.split(',')
+    else:
+        input_tags = tags
+        
+
+    inputs = processor3(text=input_tags, images=image, return_tensors="pt", padding=True).to(device)
     outputs = model3(**inputs)
     
     logits_per_image = outputs.logits_per_image
     probs = logits_per_image.softmax(dim=1).tolist()[0]
 
     results = []
-    for index,tag in enumerate(tags):
-        if probs[index] >= 0.01:
+    for index,tag in enumerate(input_tags):
+        if probs[index] >= threshold:
             results.append({
                 "name": tag,
                 "confidence": probs[index]
