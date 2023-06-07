@@ -1,6 +1,8 @@
 import os
+import datetime
 import requests
 import torch
+import tags_whitelist
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from PIL import Image
@@ -102,7 +104,6 @@ async def getTagsClip(
         input_tags = img_tags.split(',')
     else:
         input_tags = tags
-        
 
     inputs = processor3(text=input_tags, images=image, return_tensors="pt", padding=True).to(device)
     outputs = model3(**inputs)
@@ -123,3 +124,46 @@ async def getTagsClip(
         "model": "CLIP",
         "tags": results
     }
+
+@app.get("/analysis/")
+async def getAnalysis(
+    img_url: str
+):
+    image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+
+    t1 = datetime.datetime.now().microsecond
+
+    tag1,prob1 = getMaxTag(image, tags_whitelist.tags_where_general)
+    if tag1 == "indoor":
+        tag2,prob2 = getMaxTag(image, tags_whitelist.tags_where_indoor_detail)
+    else:
+        tag2,prob2 = getMaxTag(image, tags_whitelist.tags_where_outdoor_detail)
+
+    tag3,prob3 = getMaxTag(image, tags_whitelist.tags_what)
+
+    t2 = datetime.datetime.now().microsecond
+
+    return {
+        "where": {
+            "general": tag1 + "_" + "%.2f" % prob1,
+            "detail": tag2 + "_" + "%.2f" % prob2
+        },
+        "what": {
+            "detail": tag3 + "_" + "%.2f" % prob3
+        },
+        "time": int((t2 - t1) / 1000)
+    }
+
+def getMaxTag(image, input_tags):
+    inputs = processor3(text=input_tags, images=image, return_tensors="pt", padding=True).to(device)
+    outputs = model3(**inputs)
+    logits_per_image = outputs.logits_per_image
+    probs = logits_per_image.softmax(dim=1).tolist()[0]
+    max_prob = 0
+    max_index = 0
+    for index,prob in enumerate(probs):
+        if prob > max_prob:
+            max_prob = prob
+            max_index = index
+
+    return input_tags[max_index], max_prob
