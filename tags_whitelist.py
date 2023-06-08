@@ -21,6 +21,16 @@ tags_where_outdoor_detail = [
 ]
 
 tags_what = [
+    "the baby is lifting head up",
+    "the baby is crawling",
+    "the baby is playing with toys",
+    "the baby is eating baby food",
+    "the baby is drinking milk",
+    "the baby is smiling",
+    "the baby is crying",
+    "the baby is receiving a vaccine",
+    "the baby is yawning",
+    "the baby is taking a bath",
     "lying idly",
     "standing idly"
     "posing for a picture",
