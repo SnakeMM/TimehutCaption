@@ -103,7 +103,7 @@ async def getTagsClip(
     if img_tags:
         input_tags = img_tags.split(',')
     else:
-        input_tags = tags
+        input_tags = tags_whitelist.tags_what
 
     inputs = processor3(text=input_tags, images=image, return_tensors="pt", padding=True).to(device)
     outputs = model3(**inputs)
@@ -141,9 +141,12 @@ async def getAnalysis(
 
     tag3,prob3 = getMaxTag(image, tags_whitelist.tags_what)
 
+    #tag4,prob4 = getMaxTag(image, tags_whitelist.tags_people_count)
+
     t2 = datetime.datetime.now().microsecond
 
     return {
+        #"people_count": tag4 + "_" + "%.2f" % prob4,
         "where": {
             "general": tag1 + "_" + "%.2f" % prob1,
             "detail": tag2 + "_" + "%.2f" % prob2
