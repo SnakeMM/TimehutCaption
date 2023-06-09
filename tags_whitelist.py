@@ -34,6 +34,7 @@ tags_what = [
     "a group photo of many children",
     "a family photo with everyone",
     "a woman holding a baby",
+    "a little infant alone",
     "a baby lying in bed",
     "taking a bath",
     "lying idly",
