@@ -8,7 +8,7 @@ from fastapi import FastAPI
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from transformers import Blip2Processor, Blip2ForConditionalGeneration
-from transformers import CLIPProcessor, CLIPModel
+from transformers import CLIPProcessor, CLIPModel, AutoTokenizer
 
 # load image tags
 tags = [] 
@@ -38,6 +38,7 @@ if (useBLIP2):
 if (useCLIP):
     processor3 = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
     model3 = CLIPModel.from_pretrained("openai/clip-vit-base-patch32").to(device)
+    tokenizer3 = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 
 app = FastAPI()
 
@@ -170,3 +171,31 @@ def getMaxTag(image, input_tags):
             max_index = index
 
     return input_tags[max_index], max_prob
+
+@app.get("/features/text/")
+async def getTextFeatures(
+    text: str
+):
+    inputs = tokenizer3([text], padding=True, return_tensors="pt").to(device)
+    text_features = model3.get_text_features(**inputs)
+    text_feature = text_features[0].detach().numpy()
+    print(len(text_feature))
+    
+    return {
+        "feature": text_feature.tolist()
+    }
+
+@app.get("/features/image/")
+async def getImageFeatures(
+    img_url: str
+):
+    image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+
+    inputs = processor3(images=image, return_tensors="pt").to(device)
+    image_features = model3.get_image_features(**inputs)
+    image_feature = image_features[0].detach().numpy()
+    print(len(image_feature))
+    
+    return {
+        "feature": image_feature.tolist()
+    }
