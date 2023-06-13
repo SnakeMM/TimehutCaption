@@ -178,7 +178,7 @@ async def getTextFeatures(
 ):
     inputs = tokenizer3([text], padding=True, return_tensors="pt").to(device)
     text_features = model3.get_text_features(**inputs)
-    text_feature = text_features[0].detach().numpy()
+    text_feature = text_features[0].detach().cpu().numpy()
     print(len(text_feature))
     
     return {
@@ -193,7 +193,7 @@ async def getImageFeatures(
 
     inputs = processor3(images=image, return_tensors="pt").to(device)
     image_features = model3.get_image_features(**inputs)
-    image_feature = image_features[0].detach().numpy()
+    image_feature = image_features[0].detach().cpu().numpy()
     print(len(image_feature))
     
     return {
