@@ -16,6 +16,11 @@ with open('tags' ,'r') as f:
     for line in f:
         tags.append(line.strip())
 
+tags_all = [] 
+with open('tags_all' ,'r') as f:
+    for line in f:
+        tags_all.append(line.strip())
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 load_dotenv()
@@ -104,7 +109,7 @@ async def getTagsClip(
     if img_tags:
         input_tags = img_tags.split(',')
     else:
-        input_tags = tags_whitelist.tags_what
+        input_tags = tags_all
 
     inputs = processor3(text=input_tags, images=image, return_tensors="pt", padding=True).to(device)
     outputs = model3(**inputs)
@@ -123,7 +128,7 @@ async def getTagsClip(
 
     return {
         "model": "CLIP",
-        "tags": results
+        "tags": results[:10]
     }
 
 @app.get("/analysis/")
