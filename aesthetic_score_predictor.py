@@ -7,7 +7,7 @@ from transformers import CLIPProcessor, CLIPModel
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-clipModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
+clipModel = CLIPModel.from_pretrained("openai/clip-vit-large-patch14").to(device)
 clipProcessor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
 
 # if you changed the MLP architecture during training, change it also here:
