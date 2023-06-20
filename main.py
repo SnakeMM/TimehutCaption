@@ -214,5 +214,5 @@ async def getAestheticScore(
     score = predict(image)
 
     return {
-        "score": score
+        "aesthetic score": score
     }
