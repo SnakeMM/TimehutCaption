@@ -9,6 +9,7 @@ from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from transformers import Blip2Processor, Blip2ForConditionalGeneration
 from transformers import CLIPProcessor, CLIPModel, AutoTokenizer
+from aesthetic_score_predictor import predict
 
 # load image tags
 tags = [] 
@@ -203,4 +204,15 @@ async def getImageFeatures(
     
     return {
         "feature": image_feature.tolist()
+    }
+
+@app.get("/score/")
+async def getAestheticScore(
+    img_url: str
+):
+    image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
+    score = predict(image)
+
+    return {
+        "score": score
     }
