@@ -1,4 +1,5 @@
 import os
+import time
 import datetime
 import requests
 import torch
@@ -195,24 +196,24 @@ async def getTextFeatures(
 async def getImageFeatures(
     img_url: str
 ):
-    t1 = datetime.datetime.now().microsecond
+    t1 = time.perf_counter()
 
     image = Image.open(requests.get(img_url, stream=True).raw).convert('RGB')
 
-    t2 = datetime.datetime.now().microsecond
+    t2 = time.perf_counter()
 
     inputs = processor3(images=image, return_tensors="pt").to(device)
     image_features = model3.get_image_features(**inputs)
     image_feature = image_features[0].detach().cpu().numpy()
 
-    t3 = datetime.datetime.now().microsecond
+    t3 = time.perf_counter()
 
     print(len(image_feature))
     
     return {
         "feature": image_feature.tolist(),
-        "download_time": int((t2 - t1) / 1000),
-        "calculate_time": int((t3 - t2) / 1000)
+        "download_time": int((t2 - t1) * 1000),
+        "calculate_time": int((t3 - t2) * 1000)
     }
 
 @app.get("/score/")
