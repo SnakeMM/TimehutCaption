@@ -26,8 +26,8 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 load_dotenv()
 
-useBLIP = os.getenv("MODEL_BLIP_ENABLED") == "True"
-useBLIP2 = os.getenv("MODEL_BLIP2_ENABLED") == "True"
+useBLIP = os.getenv("MODEL_BLIP_ENABLED") == "False"
+useBLIP2 = os.getenv("MODEL_BLIP2_ENABLED") == "False"
 useCLIP = os.getenv("MODEL_CLIP_ENABLED") == "True"
 
 # BLIP
