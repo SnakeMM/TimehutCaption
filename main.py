@@ -28,7 +28,7 @@ load_dotenv()
 
 useBLIP = os.getenv("MODEL_BLIP_ENABLED") == "False"
 useBLIP2 = os.getenv("MODEL_BLIP2_ENABLED") == "False"
-useCLIP = os.getenv("MODEL_CLIP_ENABLED") == "True"
+useCLIP = True
 
 # BLIP
 if (useBLIP):
