@@ -17,6 +17,7 @@ tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
 baby_id = '537592620'
 total_count = 0
 current_count = 0
+multi_count = int(sys.argv[1])
 download_times = []
 compress_times = []
 inference_times = []
@@ -47,7 +48,7 @@ async def run_task(image_urls):
 
     t1 = time.perf_counter()
 
-    semaphore = asyncio.Semaphore(5)
+    semaphore = asyncio.Semaphore(multi_count)
     async def download_with_sem(url):
         async with semaphore:
             await download_and_inference_image(url)
@@ -141,7 +142,6 @@ async def compress_image(image):
         return None
 
 def main():
-    print("Start batch test")
     readUrls()
  
 if __name__ == "__main__":
