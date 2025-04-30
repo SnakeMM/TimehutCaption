@@ -28,7 +28,10 @@ def readUrls():
     for index, row in df.iterrows():
         img_url = row[3]
         if isinstance(img_url, str) and img_url.startswith("http") and not img_url.endswith("heic"):
-            image_urls.append(img_url + "!xlthumb")
+            temp = 'https://cdn.bebememo.us/alijp/pictures/20240216/15469ebacec34b79bea872ab9234600d.jpg'
+            #temp = img_url + "!xlthumb"
+            #temp = img_url
+            image_urls.append(temp)
             print(f"{index} Download url:", img_url)
     
     run_all_tasks(image_urls[:1000])
