@@ -28,7 +28,8 @@ def readUrls():
     for index, row in df.iterrows():
         img_url = row[3]
         if isinstance(img_url, str) and img_url.startswith("http") and not img_url.endswith("heic"):
-            temp = 'https://timehut-jp.oss-ap-northeast-1-internal.aliyuncs.com/alijp/pictures/20240216/15469ebacec34b79bea872ab9234600d.jpg'
+            temp = img_url.replace('aejp.bebememo.us','timehut-jp.oss-ap-northeast-1-internal.aliyuncs.com')
+            #temp = 'https://timehut-jp.oss-ap-northeast-1-internal.aliyuncs.com/alijp/pictures/20240216/15469ebacec34b79bea872ab9234600d.jpg'
             #temp = img_url + "!xlthumb"
             #temp = img_url
             image_urls.append(temp)
